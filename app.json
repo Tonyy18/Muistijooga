@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "Muistijooga",
+    "slug": "Muistijooga",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "Muistijooga"
+}
