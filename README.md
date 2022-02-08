@@ -1,4 +1,7 @@
 # Muistijooga
-<h4>React native (no expo)</h4>
-<h4>Requires java8</h4>
-<h4>react-native-ble-plx</h4>
+<h3>Mobile app</h3>
+<ul>
+  <li>React native (no expo)</li>
+  <li>Requires java8</li>
+</ul>
+
