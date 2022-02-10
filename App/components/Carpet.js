@@ -1,6 +1,4 @@
 import { StyleSheet, Text, View, Alert} from 'react-native';
-import { BleManager } from 'react-native-ble-plx';
-const manager = new BleManager();
 const ROW_NUMBER = 6;
 
 const Cell = (props) => {
@@ -26,7 +24,6 @@ const Cell = (props) => {
     )
 }
 
-
 const Row = (props) => {
     const _style = [style.row];
     if(props.number != 5) {
@@ -50,9 +47,7 @@ export default () => {
     for(let a = 0; a < ROW_NUMBER; a++) {
         rows.push(<Row side="left" key={"row-" + a} number={a} />)
     }
-    manager.startDeviceScan(null, null, (error, device) => {
-        console.log("Device: " + device.name)
-    })
+    let found = [];
     return (
         <View style={style.carpet}>
             {rows}
@@ -63,7 +58,6 @@ export default () => {
 const style = StyleSheet.create({
     carpet: {
         padding: 20,
-        paddingTop: 60,
         flex: 1,
         flexDirection: "column"
     },
