@@ -9,7 +9,7 @@ const manager = new BleManager();
 class DeviceListItem extends Component {
   render() {
     return (
-      <Button style={styles.device} title={this.props.name}></Button>
+      <Text style={styles.device}>{this.props.name}</Text>
     )
   }
 }
@@ -43,6 +43,7 @@ class DeviceList extends Component {
     	return (
       		<View style={styles.container}>
         		<Text style={styles.header}>Muistijooga</Text>
+				<Text>Vapaat laitteet</Text>
 				{this.state.devices.map((deviceName, index) => {
         			return (<DeviceListItem key={deviceName} name={deviceName}/>);
       			})}
