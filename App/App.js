@@ -1,37 +1,54 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { Component, useEffect, useState } from 'react';
+import { StyleSheet, Text, View, Button , PermissionsAndroid, Alert} from 'react-native';
 import Carpet from "./components/Carpet"
 import { BleManager } from 'react-native-ble-plx';
+import { render } from 'react-dom';
 
 const manager = new BleManager();
-const DeviceListItem = (props) => {
-  return (
-    <Text style={styles.device}>{props.name}</Text>
-  )
+class DeviceListItem extends Component {
+  render() {
+    return (
+      <Button style={styles.device} title={this.props.name}></Button>
+    )
+  }
 }
-const DeviceList = () => {
-  const [devices, setState] = useState([]);
 
-  useEffect(() => {
-    let isMounted = true
-    manager.startDeviceScan(null, null, (error, device) => {
-      if(device != null && device.name != null && devices.indexOf(device.name) == -1) {
-        console.log(device.name)
-        devices.push(device.name);
-        setState(devices)
-      }
-    })
-  })
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Muistijooga</Text>
-      {devices.map((deviceName, index) => {
-        return (<DeviceListItem key={deviceName} name={deviceName}/>);
-      })}
-    </View>
-  )
+class DeviceList extends Component {
+	constructor(props) {
+    	super(props);
+    	this.state = {
+    		devices: [],
+			btnText: "Scan devices"
+    	}
+		this.manager = new BleManager();
+		
+	}
+	async scanDevices(moduleName = null) {
+		this.setState({devices: []});
+		this.manager.startDeviceScan(null, null, (error, device) => {
+			if(device != null && device.name != null) {
+				if(this.state.devices.indexOf(device.name) == -1) {
+					console.log("Device: " + device.name)
+					this.state.devices.push(device.name);
+					this.setState({devices: this.state.devices});
+				}
+			}
+		})
+	}
+	componentDidMount() {
+		this.scanDevices();
+	}
+	render() {
+    	return (
+      		<View style={styles.container}>
+        		<Text style={styles.header}>Muistijooga</Text>
+				{this.state.devices.map((deviceName, index) => {
+        			return (<DeviceListItem key={deviceName} name={deviceName}/>);
+      			})}
+      		</View>
+    	)
+	}
 }
 
 export default function App() {
