@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button , PermissionsAndroid, Alert} from 'react-native';
+import { StyleSheet, Text, View, Button , PermissionsAndroid, Alert, Image} from 'react-native';
 import Carpet from "./components/Carpet"
 import { BleManager } from 'react-native-ble-plx';
 import { render } from 'react-dom';
@@ -43,7 +43,13 @@ class DeviceList extends Component {
     	return (
       		<View style={styles.container}>
         		<Text style={styles.header}>Muistijooga</Text>
-				<Text>Vapaat laitteet</Text>
+				<Text style={styles.text}>Vapaat laitteet</Text>
+				
+				{
+					this.state.devices.length == 0 &&
+					<Image style={styles.loader} source={require('./assets/loader.gif')} />
+				}
+
 				{this.state.devices.map((deviceName, index) => {
         			return (<DeviceListItem key={deviceName} name={deviceName}/>);
       			})}
@@ -80,5 +86,12 @@ const styles = StyleSheet.create({
     color: "#464646",
     marginTop: 15,
     marginBottom: 15
+  },
+  text: {
+	paddingBottom: 25
+  },
+  loader: {
+	width: 40,
+	height: 40,
   }
 });
