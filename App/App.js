@@ -58,10 +58,12 @@ class DeviceList extends Component {
 	}
 }
 
-export default function App() {
-  return (
-    <DeviceList />
-  );
+export default class App extends Component {
+	render() {
+		return (
+    		<DeviceList />
+  		);
+	}
 }
 
 const styles = StyleSheet.create({
