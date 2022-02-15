@@ -8,7 +8,7 @@ import base64 from 'react-native-base64'
 class DataList extends Component {
     constructor(props) {
         super(props);
-        this.deviceName = "Muistijooga 1";
+        this.deviceName = this.props.route.deviceName;
         this.found = false;
         this.serviceUUID = "0000180c-0000-1000-8000-00805f9b34fb";
         this.service = null;
@@ -32,7 +32,7 @@ class DataList extends Component {
 			if(device != null && device.name != null) {
 				if(device.name == this.deviceName && this.found == false) {
                     this.found = true;
-                    console.log("device found");
+                    console.log("device found: " + this.deviceName);
                     device.connect().then((device) => {
                         this.setState({
                             stateText: "Haetaan palveluita..."
@@ -116,7 +116,7 @@ class DataList extends Component {
 
 export default class DeviceScreen extends Component {
     render() {
-        return <DataList route={this.props.route} navigation={this.props.navigation}/>
+        return <DataList route={this.props.route.params} navigation={this.props.navigation}/>
     }
 }
 
