@@ -1,99 +1,27 @@
-import { StatusBar } from 'expo-status-bar';
-import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button , PermissionsAndroid, Alert, Image} from 'react-native';
-import Carpet from "./components/Carpet"
-import { BleManager } from 'react-native-ble-plx';
-import { render } from 'react-dom';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Home from "./components/HomeScreen";
+import Device from "./components/DeviceScreen";
 
-const manager = new BleManager();
-class DeviceListItem extends Component {
-  render() {
-    return (
-      <Text style={styles.device}>{this.props.name}</Text>
-    )
-  }
-}
+const Stack = createNativeStackNavigator();
 
-class DeviceList extends Component {
-	constructor(props) {
-    	super(props);
-    	this.state = {
-    		devices: [],
-			btnText: "Scan devices"
-    	}
-		this.manager = new BleManager();
-		
-	}
-	async scanDevices(moduleName = null) {
-		this.setState({devices: []});
-		this.manager.startDeviceScan(null, null, (error, device) => {
-			if(device != null && device.name != null) {
-				if(this.state.devices.indexOf(device.name) == -1) {
-					console.log("Device: " + device.name)
-					this.state.devices.push(device.name);
-					this.setState({devices: this.state.devices});
-				}
-			}
-		})
-	}
-	componentDidMount() {
-		this.scanDevices();
-	}
-	render() {
-    	return (
-      		<View style={styles.container}>
-        		<Text style={styles.header}>Muistijooga</Text>
-				<Text style={styles.text}>Vapaat laitteet</Text>
-				
-				{
-					this.state.devices.length == 0 &&
-					<Image style={styles.loader} source={require('./assets/loader.gif')} />
-				}
-
-				{this.state.devices.map((deviceName, index) => {
-        			return (<DeviceListItem key={deviceName} name={deviceName}/>);
-      			})}
-      		</View>
-    	)
-	}
-}
-
-export default class App extends Component {
-	render() {
-		return (
-    		<DeviceList />
-  		);
-	}
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    paddingTop: 65
-  },
-  header: {
-    fontSize: 35,
-    paddingBottom: 40,
-    color: "#009BFF"
-  },
-  device: {
-    borderStyle: "solid",
-    borderColor: "#E2E2E2",
-    fontSize: 18,
-    borderWidth: 1,
-    width: "70%",
-    textAlign: "center",
-    padding: 20,
-    color: "#464646",
-    marginTop: 15,
-    marginBottom: 15
-  },
-  text: {
-	paddingBottom: 25
-  },
-  loader: {
-	width: 40,
-	height: 40,
-  }
-});
+const MyStack = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{ title: 'Muistijooga' }}
+        />
+		<Stack.Screen
+          name="Device"
+          component={Device}
+          options={{ title: 'Laite ikkuna' }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+export default MyStack;
