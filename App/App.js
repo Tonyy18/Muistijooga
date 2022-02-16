@@ -18,7 +18,7 @@ const MyStack = () => {
 		<Stack.Screen
           name="Device"
           component={Device}
-          options={{ title: 'Laite ikkuna' }}
+          options={({route}) => ({title: route.params.deviceName}) }
         />
       </Stack.Navigator>
     </NavigationContainer>
