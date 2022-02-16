@@ -67,9 +67,6 @@ class DataList extends Component {
                         device.characteristicsForService(this.serviceUUID).then((chars) => {
                             if(chars.length > 0) {
                                 this.charactUUID = chars[0]["uuid"];
-                                setInterval(() => {
-
-                                })
                             }
                         })
                     })
@@ -83,7 +80,6 @@ class DataList extends Component {
 			this.findDevice();
 		})
 		this.props.navigation.addListener("beforeRemove", () => {
-            clearInterval(this.interval);
             if(this.device != null) {
                 if(this.subscription != null) {
                     this.subscription.remove();
