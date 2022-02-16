@@ -10,5 +10,7 @@
 <ul>
   <li>Arduino Mega</li>
   <li>Arduino nano 33 ble</li>
+  <li>Service uuid = 180c -> 0000180c-0000-1000-8000-00805f9b34fb</li>
+  <li>Characteristic uuid = 2A56</li>
 </ul>
 
