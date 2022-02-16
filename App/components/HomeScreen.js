@@ -51,12 +51,6 @@ class DeviceList extends Component {
 		})
 	}
 	render() {
-		let section = [
-			{
-				title: "Devices",
-				data: this.state.devices
-			}
-		]
     	return (
       		<View style={styles.container}>
 				<Text onPress={() => this.updateDevices()} style={styles.updateBtn}>Päivitä</Text>
