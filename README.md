@@ -9,6 +9,6 @@
 <h3>Arduino</h3>
 <ul>
   <li>Arduino Mega</li>
-  <li>Bluetooth module AT09</li>
+  <li>Arduino nano 33 ble</li>
 </ul>
 
