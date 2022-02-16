@@ -3,7 +3,7 @@
 <ul>
   <li>React native (no expo)</li>
   <li>Java version 8</li>
-  <li><a href="https://dotintent.github.io/react-native-ble-plx/#introduction">react-native-ble-plx</a></li>
+  <li><a href="https://dotintent.github.io/react-native-ble-plx/#introduction" target="__blank">react-native-ble-plx</a></li>
 </ul>
 
 <h3>Arduino</h3>
