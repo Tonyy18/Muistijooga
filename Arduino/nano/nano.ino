@@ -27,6 +27,7 @@ void setup() {
   for(int a = 0; a < pinCount; a++) {
     pinMode(inputPins[a], INPUT);
   };
+  greetingCharacteristic.writeValue("");
 }
 
 void loop() {
