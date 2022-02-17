@@ -4,6 +4,10 @@ BLEService greetingService("180C");
 
 BLEStringCharacteristic greetingCharacteristic("2A56", BLERead | BLENotify, 13);
 
+int pinCount = 20;
+int analogTrigger = 1023 / 3;
+int inputPins[20] =  {A0,A1,A2,A3,A4,A5,A6,A7,2,3,4,5,6,7,8,9,10,11,12,13};
+
 void setup() {
   Serial.begin(9600);
   BLE.begin();
@@ -18,6 +22,10 @@ void setup() {
   Serial.println(BLE.address());
   Serial.println("Waiting for connections...");
   pinMode(LED_BUILTIN, OUTPUT);
+
+  for(int a = 0; a < pinCount; a++) {
+    pinMode(inputPins[a], INPUT);
+  };
 }
 
 void loop() {
@@ -27,17 +35,29 @@ void loop() {
     Serial.print("Connected to central MAC: ");
     Serial.println(central.address());
 
-    String str = "0";
+    String data = "0";
     while (central.connected()){
-      delay(500);
-      if(str == "0") {
-        digitalWrite(LED_BUILTIN, LOW);
-        str = "1";
-      } else {
-        digitalWrite(LED_BUILTIN, HIGH);
-        str = "0";
-      }
-      greetingCharacteristic.writeValue(str);
+      String data = "";
+      for(int a = 0; a < pinCount; a++) {
+        int pin = inputPins[a];
+        int val = 0;
+        if(a < 8) {
+          //Analog pin
+          int analog = analogRead(pin); 
+          if(analog >= analogTrigger) {
+            //Enough pressure
+            val = 1;
+          };
+        } else {
+          //Digital pin
+          val = digitalRead(pin);
+        };
+        if(val == 1) {
+          data += String(a) + ":";
+        };
+        
+      };
+      greetingCharacteristic.writeValue(data);
     }
   }
 }
