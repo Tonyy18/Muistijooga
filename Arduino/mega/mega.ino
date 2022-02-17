@@ -1,4 +1,8 @@
 
+//Arduino Mega
+//Convert analog inputs to digital outputs
+//Digital outputs are forwarded to nano 33 ble digital inputs
+
 int analogTrigger = 1023 / 3;
 int pinCount = 12;
 int inputs[12] = {A0,A1,A2,A3,A4,A5,A6,A7,A8,A9,A10,A11};
