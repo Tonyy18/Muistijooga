@@ -32,10 +32,10 @@ const Row = (props) => {
     let start = (ROW_NUMBER * 4 + 1) - (4 * props.number);
     const cells = []
     for(let a = 4; a >= 1; a--) {
-        cells.push(<Cell inrow={a} number={start - a} />)
+        cells.push(<Cell inrow={a} number={start - a} key={a}/>)
     }
     return (
-        <View style={_style}>
+        <View style={_style} key={props.number}>
             {cells}
         </View>
     )

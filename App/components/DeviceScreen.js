@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button, Alert, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Button, Alert, Image, TouchableOpacity, TouchableWithoutFeedbackBase} from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
 import { render } from 'react-dom';
 import base64 from 'react-native-base64'
+import Carpet from "./Carpet.js";
 
 class DataList extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class DataList extends Component {
         this.charact = null //characteristic object to read
         this.device = null;
         this.transactionId = this.deviceName;
-        this.subscription = null;
+        this.subscriptions = [];
         this.state = {
             data: "",
             stateText: ""
@@ -50,26 +51,36 @@ class DataList extends Component {
                                     this.setState({
                                         stateText: "Haetaan ominaisuuksia..."
                                     })
-                                    service.readCharacteristic(this.charactUUID, this.transactionId).then((charact) => {
-                                        this.charact = charact;
-                                        this.subscription = charact.monitor((error, charact) => {
-                                            if(charact == null) return;
-                                            const value = base64.decode(charact.value);
-                                            this.setState({
-                                                data: value,
-                                                stateText: ""
-                                            })
-                                        })
-                                    }).catch(() => {})
+                                    device.characteristicsForService(this.serviceUUID).then((chars) => {
+                                        if(chars.length > 0) {
+                                            this.charactUUID = chars[0]["uuid"];
+                                            console.log(this.charactUUID);
+                                            service.readCharacteristic(this.charactUUID, null).then((charact) => {
+                                                this.charact = charact;
+                                                console.log("charact");
+                                                this.setState({
+                                                    stateText: ""
+                                                })
+                                                this.subscriptions.push(charact.monitor((error, charact) => {
+                                                    if(charact == null) return;
+                                                    const value = base64.decode(charact.value);
+                                                    console.log(value);
+                                                    this.setState({
+                                                        data: value
+                                                    })
+                                                }));
+                                            }).catch(() => {})
+                                        }
+                                    })
                                 }
                             }
+                        }).then(() => {
+                            this.subscriptions.push(device.onDisconnected(() => {
+                                this.found = false;
+                                this.findDevice();
+                            }));
                         })
-                        device.characteristicsForService(this.serviceUUID).then((chars) => {
-                            if(chars.length > 0) {
-                                this.charactUUID = chars[0]["uuid"];
-                            }
-                        })
-                    })
+                    }).catch(() => {})
                 }
 			}
 		})
@@ -105,6 +116,10 @@ class DataList extends Component {
                     <Text style={styles.stateText}>{this.state.stateText}</Text>
                 }
                 <Text style={styles.dataText}>{this.state.data}</Text>
+                {
+                    this.state.stateText.length == 0 &&
+                    <Carpet />
+                }
             </View>
         )
     }
