@@ -7,9 +7,6 @@ const ROW_NUMBER = 6;
 class Cell extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            nextStep: 0
-        }
     }
     render() {
         let _style = [style.cell];
@@ -24,35 +21,24 @@ class Cell extends Component {
         } else if(this.letter == "X") {
             letter = "Y";
         }
-        let data = this.props.data.split(":") //Data from sensor
-        data.pop()
-        data.shift()
-        data = data.map(a => parseInt(a))
         let pattern = this.props.pattern //Pattern in use
         let leftSteps = pattern.getLeftSteps();
         let rightSteps = pattern.getRightSteps();
 
         //The game
-        let steps = pattern.getSteps(null);
-        let nextStep = steps[this.state.nextStep];
         let wrong = false;
-        let right = false;
-        if(data.length > 0) {
-            //Active sensors
-            if(data.indexOf(this.props.number) > -1) {
-                //Sensor to this cell
-                console.log("cell")
-                if(data.indexOf(nextStep) > -1) {
-                    right = true;
-                } else {
-                    wrong = true;
-                }
-            }
+        let correct = false;
+
+        if(this.props.correctSteps.indexOf(this.props.number) > -1) {
+            correct = true;
+        }
+        if(this.props.data.indexOf(this.props.number) > -1 && this.props.correctSteps.indexOf(this.props.number) == -1) {
+            wrong = true;
         }
 
         let image;
         if(leftSteps.indexOf(this.props.number) > -1) {
-            if(right) {
+            if(correct) {
                 image = <Image style={style.stepImage} source={require('../assets/step-left-correct.png')} />;
             } else if(wrong) {
                 image = <Image style={style.stepImage} source={require('../assets/step-left-wrong.png')} />;
@@ -60,7 +46,7 @@ class Cell extends Component {
                 image = <Image style={style.stepImage} source={require('../assets/step-left.png')} />;
             }
         } else if(rightSteps.indexOf(this.props.number) > -1) {
-            if(right) {
+            if(correct) {
                 image = <Image style={style.stepImage} source={require('../assets/step-right-correct.png')} />;
             } else if(wrong) {
                 image = <Image style={style.stepImage} source={require('../assets/step-right-wrong.png')} />;
@@ -93,7 +79,7 @@ class Row extends Component {
         let start = (ROW_NUMBER * 4 + 1) - (4 * this.props.number);
         let cells = []
         for(let a = 4; a >= 1; a--) {
-            cells.push(<Cell inrow={a} number={start - a} key={a} data={this.props.data} pattern={this.props.pattern}/>)
+            cells.push(<Cell inrow={a} number={start - a} key={a} data={this.props.data} pattern={this.props.pattern} correctSteps={this.props.correctSteps}/>)
         }
         return (
             <View style={_style} key={this.props.number}>
@@ -108,7 +94,10 @@ export default class Carpet extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            pattern: Patterns.objects[0]
+            pattern: Patterns.objects[0],
+            nextStep: 0,
+            correctSteps: [],
+            finished: false
         }
         this.pickerItems = [];
         for(let a = 0; a < Patterns.objects.length; a++) {
@@ -116,20 +105,49 @@ export default class Carpet extends Component {
             this.pickerItems.push(<Picker.Item key={pattern} label={pattern} value={Patterns.objects[a]}/>)
         }
     }
-
-    
-
+    reset() {
+        this.setState({
+            correctSteps: [],
+            finished: false,
+            nextStep: 0
+        })
+    }
     render() {
+        let data = this.props.data.split(":")
+        data.pop();
+        data.shift();
+        data = data.map(x => parseInt(x))
+
+        let steps = this.state.pattern.getSteps(null);
+        let correctSteps = this.state.correctSteps;
+        let nextStep = steps[this.state.nextStep];
+        if(data.indexOf(nextStep) > -1) {
+            correctSteps.push(nextStep)
+            this.setState({
+                correctSteps: correctSteps,
+                nextStep: this.state.nextStep + 1
+            })
+        }
+
+        if(this.state.correctSteps.length == steps.length && this.state.finished == false) {
+            this.setState({
+                finished: true
+            })
+            //All correct steps done
+            Alert.alert("Valmis!");
+        }
+
         let rows = [];
         for(let a = 0; a < ROW_NUMBER; a++) {
-            rows.push(<Row side="left" key={"row-" + a} number={a} data={this.props.data} pattern={this.state.pattern}/>)
+            rows.push(<Row side="left" key={"row-" + a} number={a} data={data} pattern={this.state.pattern} correctSteps={this.state.correctSteps}/>)
         }
+        
         return (
             
             <View style={style.carpet}>
                 <Picker style={style.picker}
                 selectedValue={this.state.pattern} 
-                onValueChange={(item, index) => {this.setState({pattern:item})}}>
+                onValueChange={(item, index) => {this.setState({pattern:item}); this.reset()}}>
                     {this.pickerItems}
                 </Picker>
                 {rows}

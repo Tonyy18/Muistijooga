@@ -2,7 +2,18 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
-
+class Test {
+    static patternName = "Testi askelkuvio"
+    static getSteps() {
+        return [8,9,10,11,12,13]
+    }
+    static getLeftSteps() {
+        return [8,10,12]
+    }
+    static getRightSteps() {
+        return [9,11,13]
+    }
+}
 class Pattern1 {
     static patternName = "Askelkuvio 1";
     static getSteps(back = false) {
@@ -112,8 +123,8 @@ class Pattern4 {
 
 class Patterns {
     constructor() {
-        this.objects = [Pattern1, Pattern2, Pattern3, Pattern4];
+        this.objects = [Pattern1, Pattern2, Pattern3, Pattern4,Test];
     }
 }
-export {Pattern1, Pattern2, Pattern3, Pattern4}
+export {Pattern1, Pattern2, Pattern3, Pattern4,Test}
 export default new Patterns();
