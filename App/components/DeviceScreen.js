@@ -32,13 +32,13 @@ class DataList extends Component {
 		this.manager.startDeviceScan(null, null, (error, device) => {
 			if(device != null && device.name != null) {
 				if(device.name == this.deviceName && this.found == false) {
+                    this.manager.stopDeviceScan();
                     this.found = true;
                     console.log("device found: " + this.deviceName);
                     device.connect().then((device) => {
                         this.setState({
                             stateText: "Haetaan palveluita..."
                         })
-                        this.manager.stopDeviceScan();
                         console.log("Connected");
                         return device.discoverAllServicesAndCharacteristics()
                     }).then((device) => {
@@ -54,19 +54,17 @@ class DataList extends Component {
                                     device.characteristicsForService(this.serviceUUID).then((chars) => {
                                         if(chars.length > 0) {
                                             this.charactUUID = chars[0]["uuid"];
-                                            console.log(this.charactUUID);
                                             service.readCharacteristic(this.charactUUID, null).then((charact) => {
                                                 this.charact = charact;
-                                                console.log("charact");
                                                 this.setState({
-                                                    stateText: ""
+                                                    stateText: "Odotetaan sensori dataa ..."
                                                 })
                                                 this.subscriptions.push(charact.monitor((error, charact) => {
                                                     if(charact == null) return;
                                                     const value = base64.decode(charact.value);
-                                                    console.log(value);
                                                     this.setState({
-                                                        data: value
+                                                        data: value,
+                                                        stateText: ""
                                                     })
                                                 }));
                                             }).catch(() => {})
@@ -115,10 +113,9 @@ class DataList extends Component {
                     this.state.stateText.length != 0 &&
                     <Text style={styles.stateText}>{this.state.stateText}</Text>
                 }
-                <Text style={styles.dataText}>{this.state.data}</Text>
                 {
-                    this.state.stateText.length == 0 &&
-                    <Carpet />
+                    this.state.data.length != 0 &&
+                    <Carpet data={this.state.data}/>
                 }
             </View>
         )
@@ -135,7 +132,6 @@ const styles = StyleSheet.create({
     container: {
 		flex: 1,
 		alignItems: "center",
-		paddingTop: 39
 	},
     dataText: {
         fontSize: 30
@@ -146,5 +142,6 @@ const styles = StyleSheet.create({
     loader: {
 		width: 40,
 		height: 40,
+        marginTop: 39
 	}
 })

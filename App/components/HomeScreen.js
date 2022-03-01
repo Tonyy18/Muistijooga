@@ -3,6 +3,7 @@ import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
 import { render } from 'react-dom';
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
 class DeviceList extends Component {
 	constructor(props) {
@@ -17,7 +18,7 @@ class DeviceList extends Component {
 		
 	}
 	async scanDevices() {
-		this.setState({devices: []});
+		this.setState({devices: [], text: this.originalText});
 		this.manager.startDeviceScan(null, null, (error, device) => {
 			if(device != null && device.name != null) {
 				if(this.state.devices.indexOf(device.name) == -1 && device.name.includes(this.nameInc)) {
@@ -29,7 +30,19 @@ class DeviceList extends Component {
 		})
 	}
 	componentDidMount() {
-		this.scanDevices();
+		BluetoothStateManager.getState().then((bluetoothState) => {
+			if(bluetoothState == "PoweredOff") {
+				this.setState({text: "Bluetooth ei ole päällä"})
+			} else if(bluetoothState == "PoweredOn") {
+				this.scanDevices();
+			}
+		});
+		BluetoothStateManager.onStateChange((bluetoothState) => {
+			// do something...
+			if(bluetoothState == "PoweredOn") {
+				this.scanDevices();
+			}
+		}, true /*=emitCurrentState*/);
 		this.props.navigation.addListener("focus", () => {
 			this.manager = new BleManager();
 			this.scanDevices();
