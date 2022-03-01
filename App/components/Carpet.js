@@ -7,6 +7,9 @@ const ROW_NUMBER = 6;
 class Cell extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            nextStep: 0
+        }
     }
     render() {
         let _style = [style.cell];
@@ -22,10 +25,48 @@ class Cell extends Component {
             letter = "Y";
         }
         let data = this.props.data.split(":") //Data from sensor
+        data.pop()
+        data.shift()
+        data = data.map(a => parseInt(a))
         let pattern = this.props.pattern //Pattern in use
-        let image = <Image style={style.stepImage} source={require('../assets/step-right.png')} />;
-        if(data.indexOf(String(this.props.number)) > -1) {
-            image = <Text>Pressed</Text>
+        let leftSteps = pattern.getLeftSteps();
+        let rightSteps = pattern.getRightSteps();
+
+        //The game
+        let steps = pattern.getSteps(null);
+        let nextStep = steps[this.state.nextStep];
+        let wrong = false;
+        let right = false;
+        if(data.length > 0) {
+            //Active sensors
+            if(data.indexOf(this.props.number) > -1) {
+                //Sensor to this cell
+                console.log("cell")
+                if(data.indexOf(nextStep) > -1) {
+                    right = true;
+                } else {
+                    wrong = true;
+                }
+            }
+        }
+
+        let image;
+        if(leftSteps.indexOf(this.props.number) > -1) {
+            if(right) {
+                image = <Image style={style.stepImage} source={require('../assets/step-left-correct.png')} />;
+            } else if(wrong) {
+                image = <Image style={style.stepImage} source={require('../assets/step-left-wrong.png')} />;
+            } else {
+                image = <Image style={style.stepImage} source={require('../assets/step-left.png')} />;
+            }
+        } else if(rightSteps.indexOf(this.props.number) > -1) {
+            if(right) {
+                image = <Image style={style.stepImage} source={require('../assets/step-right-correct.png')} />;
+            } else if(wrong) {
+                image = <Image style={style.stepImage} source={require('../assets/step-right-wrong.png')} />;
+            } else {
+                image = <Image style={style.stepImage} source={require('../assets/step-right.png')} />;
+            }
         }
         return (
             <View style={_style}>
@@ -72,7 +113,7 @@ export default class Carpet extends Component {
         this.pickerItems = [];
         for(let a = 0; a < Patterns.objects.length; a++) {
             const pattern = Patterns.objects[a].patternName;
-            this.pickerItems.push(<Picker.Item label={pattern} value={Patterns.objects[a]}/>)
+            this.pickerItems.push(<Picker.Item key={pattern} label={pattern} value={Patterns.objects[a]}/>)
         }
     }
 
@@ -91,7 +132,6 @@ export default class Carpet extends Component {
                 onValueChange={(item, index) => {this.setState({pattern:item})}}>
                     {this.pickerItems}
                 </Picker>
-                <Text>{this.props.data}</Text>
                 {rows}
             </View>
         )

@@ -42,6 +42,12 @@ class DeviceList extends Component {
 			if(bluetoothState == "PoweredOn") {
 				this.scanDevices();
 			}
+			if(bluetoothState == "PoweredOff") {
+				this.setState({
+					devices: [],
+					text: "Bluetooth ei ole päällä"
+				})
+			}
 		}, true /*=emitCurrentState*/);
 		this.props.navigation.addListener("focus", () => {
 			this.manager = new BleManager();

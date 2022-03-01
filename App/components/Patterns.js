@@ -4,63 +4,59 @@ import { StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 
 class Pattern1 {
-    static patternName = "Pattern 1";
-    static backwards = false;
-    static getSteps() {
-        let step = 0;
-        let results = []
+    static patternName = "Askelkuvio 1";
+    static getSteps(back = false) {
+        const up = [1,3,2,4,5,7,6,8,9,11,10,12,13,15,14,16,17,19,18,20,21,23,22,24];
+        const down = [23,21,20,18,19,17,16,14,15,13,12,10,11,9,8,6,7,5,4,2,3,1];
+        if(back == false) {
+            return up;
+        } else if(back == true) {
+            return down;
+        } else if(back == null){
+            return up.concat(down);
+        }
+    }
+    static getSideSteps(start) {
+        let results = [];
         for(let a = 1; a <= 6; a++) {
-            step++;
-            results.push(step);
-            step = step + 2;
-            results.push(step);
-            step--;
-            results.push(step);
-            step = step + 2;
-            results.push(step);
+            results.push(start);
+            start++;
+            results.push(start);
+            start = start + 3;
         }
         return results;
+    }
+    static getLeftSteps() {
+        return this.getSideSteps(1);
+    }
+    static getRightSteps() {
+        return this.getSideSteps(3);
     }
 }
 
 class Pattern2 {
-    static patternName = "Pattern 2";
-    static backwards = false;
-    static getSteps() {
-        let step = 0;
-        let results = []
-        for(let a = 1; a <= 6; a++) {
-            if(a%2 != 0) {
-                if(a == 1) {
-                    step++;
-                    results.push(step);
-                } else {
-                    step = step + 3;
-                    results.push(step);
-                }
-                step = step + 3;
-                results.push(step);
-                step = step - 2;
-                results.push(step);
-                step++;
-                results.push(step);
-            } else {
-                step = step + 5;
-                results.push(step);
-                step = step - 3;
-                results.push(step);
-                step = step + 2;
-                results.push(step);
-                step--;
-                results.push(step);
-            }
+    static patternName = "Askelkuvio 2";
+    static getSteps(back) {
+        const up = [1,4,2,3,8,5,7,6,9,12,10,11,16,13,15,14,17,20,18,19,24,21,23,22];
+        const down = [17,20,18,19,16,13,15,14,9,12,10,11,8,5,7,6,1,4,2,3];
+        if(back == false) {
+            return up;
+        } else if(back == true) {
+            return down;
+        } else if(back == null){
+            return up.concat(down);
         }
-        return results;
+    }
+    static getLeftSteps() {
+        return Pattern1.getSideSteps(1);
+    }
+    static getRightSteps() {
+        return Pattern1.getSideSteps(3);
     }
 }
 
 class Pattern3 {
-    static patternName = "Pattern 3";
+    static patternName = "Askelkuvio 3";
     static backwards = true;
     static getSteps(back = false) {
         const up  = [1, 6, 9, 14, 17, 22];
@@ -73,10 +69,16 @@ class Pattern3 {
             return up.concat(down);
         }
     }
+    static getLeftSteps() {
+        return [6,14,22,20,12,4];
+    }
+    static getRightSteps() {
+        return [1,9,17,23,15,7];
+    }
 }
 
 class Pattern4 {
-    static patternName = "Pattern 4";
+    static patternName = "Askelkuvio 4";
     static backwards = true;
     static getSteps(back = false) {
         const up = [2,3,4,1,7,6,5,8,10,11,12,9,15,14,13,16,18,19,20,17,23,22,21,24];
@@ -88,6 +90,23 @@ class Pattern4 {
         } else if(back == null) {
             return up.concat(down);
         }
+    }
+    static getSideSteps(start) {
+        let results = [];
+        let step = start;
+        for(let a = 1; a <= 6; a++) {
+            results.push(step);
+            step = step + 2;
+            results.push(step);
+            step = step + 2;
+        }
+        return results;
+    }
+    static getLeftSteps() {
+        return this.getSideSteps(1)
+    }
+    static getRightSteps() {
+        return this.getSideSteps(2)
     }
 }
 
