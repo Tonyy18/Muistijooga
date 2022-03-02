@@ -2,6 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
+
 class Test {
     static patternName = "Testi askelkuvio"
     static getSteps() {
@@ -12,6 +13,9 @@ class Test {
     }
     static getRightSteps() {
         return [9,11,13]
+    }
+    static getLowerSteps() {
+        return [];
     }
 }
 class Pattern1 {
@@ -43,6 +47,17 @@ class Pattern1 {
     static getRightSteps() {
         return this.getSideSteps(3);
     }
+    static getLowerSteps() {
+        let results = []
+        let step = 1;
+        for(let a = 0; a <= 6; a++) {
+            results.push(step);
+            step = step + 2;
+            results.push(step);
+            step = step + 2;
+        }
+        return results;
+    }
 }
 
 class Pattern2 {
@@ -64,6 +79,17 @@ class Pattern2 {
     static getRightSteps() {
         return Pattern1.getSideSteps(3);
     }
+    static getLowerSteps() {
+        let results = []
+        let step = 1;
+        for(let a = 0; a <= 6; a++) {
+            results.push(step);
+            step = step + 3
+            results.push(step);
+            step = step + 1;
+        }
+        return results;
+    }
 }
 
 class Pattern3 {
@@ -80,11 +106,26 @@ class Pattern3 {
             return up.concat(down);
         }
     }
-    static getLeftSteps() {
-        return [6,14,22,20,12,4];
+    static getLeftSteps(back = null) {
+        if(back == false) {
+            return [6, 14, 22]
+        } else if(back == true) {
+            return [20,12,4]
+        } else if(back == null) {
+            return [6,14,22,20,12,4];
+        }
     }
-    static getRightSteps() {
-        return [1,9,17,23,15,7];
+    static getRightSteps(back = null) {
+        if(back == false) {
+            return [1,9,17]
+        } else if(back == true) {
+            return [23,15,7]
+        } else if(back == null) {
+            return [1,9,17,23,15,7];
+        }
+    }
+    static getLowerSteps() {
+        return [];
     }
 }
 
@@ -118,6 +159,17 @@ class Pattern4 {
     }
     static getRightSteps() {
         return this.getSideSteps(2)
+    }
+    static getLowerSteps() {
+        let results = []
+        let step = 2;
+        for(let a = 0; a <= 6; a++) {
+            results.push(step);
+            step++;
+            results.push(step);
+            step = step + 3;
+        }
+        return results;
     }
 }
 

@@ -83,25 +83,36 @@ class DataList extends Component {
 			}
 		})
     }
+    removeSubscriptions() {
+        for(let a = 0; a < this.subscriptions.length; a++) {
+            this.subscriptions[a].remove();
+        }
+    }
+    destroy () {
+        if(this.device != null) {
+            this.removeSubscriptions();
+            this.device.cancelConnection().then(() => {
+                console.log("disconnected");
+            }).catch(() => {
+                //To avoid stupid warnings
+            });
+        }
+        this.manager.stopDeviceScan();
+        this.manager.destroy();
+        delete this.manager;
+    }
     componentDidMount() {
 		this.props.navigation.addListener("focus", () => {
 			this.manager = new BleManager();
 			this.findDevice();
 		})
-		this.props.navigation.addListener("beforeRemove", () => {
-            if(this.device != null) {
-                if(this.subscription != null) {
-                    this.subscription.remove();
-                }
-                this.device.cancelConnection().catch(() => {
-                    //To avoid stupid warnings
-                });
-            }
-			this.manager.stopDeviceScan();
-			this.manager.destroy();
-			delete this.manager;
-		})
+		// this.props.navigation.addListener("beforeRemove", () => {
+        //     this.destroy();
+		// })
 	}
+    componentWillUnmount() {
+        this.destroy();
+    }
     render() {
         return (
             <View style={styles.container}>

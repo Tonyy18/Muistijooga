@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Image,} from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
 import { render } from 'react-dom';
 import BluetoothStateManager from 'react-native-bluetooth-state-manager';
