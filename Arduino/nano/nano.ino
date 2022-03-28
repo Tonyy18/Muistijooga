@@ -54,7 +54,7 @@ void loop() {
           val = digitalRead(pin);
         };
         if(val == 1) {
-          data += String(a) + ":";
+          data += String(a + 1) + ":";
         }
       };
       Serial.println(data);

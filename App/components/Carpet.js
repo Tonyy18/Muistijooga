@@ -204,7 +204,6 @@ const style = StyleSheet.create({
         position: "absolute",
         width: "100%",
         height: 200,
-        right: 20, //padding
         top: 150,
         borderRadius: 10,
         backgroundColor: "#ffffff",
