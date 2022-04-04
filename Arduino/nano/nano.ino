@@ -8,6 +8,7 @@ int pinCount = 20;
 //Digital pins comes from mega
 int analogTrigger = 950; //Minium voltage to terminate signal as HIGH
 int inputPins[20] =  {A0,A1,A2,A3,A4,A5,A6,A7,2,3,4,5,6,7,8,9,10,11,12,13};
+int ledPin = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -28,15 +29,17 @@ void setup() {
     pinMode(inputPins[a], INPUT);
   };
   greetingCharacteristic.writeValue("");
+  pinMode(ledPin, OUTPUT);
+  digitalWrite(ledPin, LOW);
 }
 
 void loop() {
   BLEDevice central = BLE.central();
-  digitalWrite(LED_BUILTIN, HIGH);
+  digitalWrite(ledPin, LOW);
   if (central) {
     Serial.print("Connected to central MAC: ");
     Serial.println(central.address());
-
+    digitalWrite(ledPin, HIGH);
     while (central.connected()){
       String data = ":";
       for(int a = 0; a < pinCount; a++) {
