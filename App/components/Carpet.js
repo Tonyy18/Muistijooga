@@ -127,6 +127,12 @@ export default class Carpet extends Component {
 
         if(this.state.finished == false) {
             let steps = this.state.pattern.getSteps(null);
+            //Maximum of 20 steps. Remove others
+            if(steps.length > 20) {
+                while(steps.length > 20) {
+                    steps.pop();
+                }
+            }
             let correctSteps = this.state.correctSteps;
             let nextStep = steps[this.state.nextStep];
             if(data.indexOf(nextStep) > -1) {
