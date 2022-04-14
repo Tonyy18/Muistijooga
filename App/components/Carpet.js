@@ -126,13 +126,11 @@ export default class Carpet extends Component {
         data = data.map(x => parseInt(x))
 
         if(this.state.finished == false) {
-            let steps = this.state.pattern.getSteps(null);
+            let _steps = this.state.pattern.getSteps(null);
             //Maximum of 20 steps. Remove others
-            if(steps.length > 20) {
-                while(steps.length > 20) {
-                    steps.pop();
-                }
-            }
+            let steps = _steps.filter((el) => {
+                return el <= 20;
+            })
             let correctSteps = this.state.correctSteps;
             let nextStep = steps[this.state.nextStep];
             if(data.indexOf(nextStep) > -1) {
