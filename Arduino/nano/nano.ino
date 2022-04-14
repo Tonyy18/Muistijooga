@@ -7,6 +7,7 @@ BLEStringCharacteristic greetingCharacteristic("2A56", BLERead | BLENotify, 13);
 int pinCount = 20;
 //Digital pins comes from mega
 int analogTrigger = 950; //Minium voltage to terminate signal as HIGH
+int trigger = 750;
 int inputPins[20] =  {A0,A1,A2,A3,A4,A5,A6,A7,2,3,4,5,6,7,8,9,10,11,12,13};
 int ledPin = 0;
 
@@ -47,8 +48,8 @@ void loop() {
         int val = 0;
         if(a < 8) {
           //Analog pin
-          int analog = analogRead(pin); 
-          if(analog >= analogTrigger) {
+          int analog = analogRead(pin);
+          if(analog >= trigger) {
             //Enough pressure
             val = 1;
           };
