@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button, Alert, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Button, Alert, Image, TouchableOpacity, TouchableWithoutFeedbackBase} from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
 import { render } from 'react-dom';
 import base64 from 'react-native-base64'
+import Carpet from "./Carpet.js";
 
 class DataList extends Component {
     constructor(props) {
@@ -16,7 +17,7 @@ class DataList extends Component {
         this.charact = null //characteristic object to read
         this.device = null;
         this.transactionId = this.deviceName;
-        this.subscription = null;
+        this.subscriptions = [];
         this.state = {
             data: "",
             stateText: ""
@@ -31,13 +32,13 @@ class DataList extends Component {
 		this.manager.startDeviceScan(null, null, (error, device) => {
 			if(device != null && device.name != null) {
 				if(device.name == this.deviceName && this.found == false) {
+                    this.manager.stopDeviceScan();
                     this.found = true;
                     console.log("device found: " + this.deviceName);
                     device.connect().then((device) => {
                         this.setState({
                             stateText: "Haetaan palveluita..."
                         })
-                        this.manager.stopDeviceScan();
                         console.log("Connected");
                         return device.discoverAllServicesAndCharacteristics()
                     }).then((device) => {
@@ -50,49 +51,68 @@ class DataList extends Component {
                                     this.setState({
                                         stateText: "Haetaan ominaisuuksia..."
                                     })
-                                    service.readCharacteristic(this.charactUUID, this.transactionId).then((charact) => {
-                                        this.charact = charact;
-                                        this.subscription = charact.monitor((error, charact) => {
-                                            if(charact == null) return;
-                                            const value = base64.decode(charact.value);
-                                            this.setState({
-                                                data: value,
-                                                stateText: ""
-                                            })
-                                        })
-                                    }).catch(() => {})
+                                    device.characteristicsForService(this.serviceUUID).then((chars) => {
+                                        if(chars.length > 0) {
+                                            this.charactUUID = chars[0]["uuid"];
+                                            service.readCharacteristic(this.charactUUID, null).then((charact) => {
+                                                this.charact = charact;
+                                                this.setState({
+                                                    stateText: "Odotetaan sensori dataa ..."
+                                                })
+                                                this.subscriptions.push(charact.monitor((error, charact) => {
+                                                    if(charact == null) return;
+                                                    const value = base64.decode(charact.value);
+                                                    this.setState({
+                                                        data: value,
+                                                        stateText: ""
+                                                    })
+                                                }));
+                                            }).catch(() => {})
+                                        }
+                                    })
                                 }
                             }
+                        }).then(() => {
+                            this.subscriptions.push(device.onDisconnected(() => {
+                                this.found = false;
+                                this.findDevice();
+                            }));
                         })
-                        device.characteristicsForService(this.serviceUUID).then((chars) => {
-                            if(chars.length > 0) {
-                                this.charactUUID = chars[0]["uuid"];
-                            }
-                        })
-                    })
+                    }).catch(() => {})
                 }
 			}
 		})
+    }
+    removeSubscriptions() {
+        for(let a = 0; a < this.subscriptions.length; a++) {
+            this.subscriptions[a].remove();
+        }
+    }
+    destroy () {
+        if(this.device != null) {
+            this.removeSubscriptions();
+            this.device.cancelConnection().then(() => {
+                console.log("disconnected");
+            }).catch(() => {
+                //To avoid stupid warnings
+            });
+        }
+        this.manager.stopDeviceScan();
+        this.manager.destroy();
+        delete this.manager;
     }
     componentDidMount() {
 		this.props.navigation.addListener("focus", () => {
 			this.manager = new BleManager();
 			this.findDevice();
 		})
-		this.props.navigation.addListener("beforeRemove", () => {
-            if(this.device != null) {
-                if(this.subscription != null) {
-                    this.subscription.remove();
-                }
-                this.device.cancelConnection().catch(() => {
-                    //To avoid stupid warnings
-                });
-            }
-			this.manager.stopDeviceScan();
-			this.manager.destroy();
-			delete this.manager;
-		})
+		// this.props.navigation.addListener("beforeRemove", () => {
+        //     this.destroy();
+		// })
 	}
+    componentWillUnmount() {
+        this.destroy();
+    }
     render() {
         return (
             <View style={styles.container}>
@@ -104,7 +124,10 @@ class DataList extends Component {
                     this.state.stateText.length != 0 &&
                     <Text style={styles.stateText}>{this.state.stateText}</Text>
                 }
-                <Text style={styles.dataText}>{this.state.data}</Text>
+                {
+                    this.state.data.length != 0 &&
+                    <Carpet data={this.state.data}/>
+                }
             </View>
         )
     }
@@ -120,7 +143,6 @@ const styles = StyleSheet.create({
     container: {
 		flex: 1,
 		alignItems: "center",
-		paddingTop: 39
 	},
     dataText: {
         fontSize: 30
@@ -131,5 +153,6 @@ const styles = StyleSheet.create({
     loader: {
 		width: 40,
 		height: 40,
+        marginTop: 39
 	}
 })

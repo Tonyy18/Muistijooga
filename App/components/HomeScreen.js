@@ -1,34 +1,54 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { Component, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Button, PermissionsAndroid, Alert, Image, TouchableOpacity} from 'react-native';
+import { StyleSheet, Text, View, Image,} from 'react-native';
 import { BleManager } from 'react-native-ble-plx';
 import { render } from 'react-dom';
-
+import BluetoothStateManager from 'react-native-bluetooth-state-manager';
 
 class DeviceList extends Component {
 	constructor(props) {
     	super(props);
+		this.originalText = "Haetaan laitteita ..."
     	this.state = {
     		devices: [],
+			text: this.originalText
     	}
 		this.nameInc = "Muistijooga";
 		this.manager = new BleManager();
 		
 	}
 	async scanDevices() {
-		this.setState({devices: []});
+		this.setState({devices: [], text: this.originalText});
 		this.manager.startDeviceScan(null, null, (error, device) => {
 			if(device != null && device.name != null) {
 				if(this.state.devices.indexOf(device.name) == -1 && device.name.includes(this.nameInc)) {
 					console.log("Device: " + device.name)
 					this.state.devices.push(device.name);
-					this.setState({devices: this.state.devices});
+					this.setState({devices: this.state.devices, text:"Vapaat laitteet"});
 				}
 			}
 		})
 	}
 	componentDidMount() {
-		this.scanDevices();
+		BluetoothStateManager.getState().then((bluetoothState) => {
+			if(bluetoothState == "PoweredOff") {
+				this.setState({text: "Bluetooth ei ole päällä"})
+			} else if(bluetoothState == "PoweredOn") {
+				this.scanDevices();
+			}
+		});
+		BluetoothStateManager.onStateChange((bluetoothState) => {
+			// do something...
+			if(bluetoothState == "PoweredOn") {
+				this.scanDevices();
+			}
+			if(bluetoothState == "PoweredOff") {
+				this.setState({
+					devices: [],
+					text: "Bluetooth ei ole päällä"
+				})
+			}
+		}, true /*=emitCurrentState*/);
 		this.props.navigation.addListener("focus", () => {
 			this.manager = new BleManager();
 			this.scanDevices();
@@ -47,14 +67,18 @@ class DeviceList extends Component {
 	}
 	updateDevices() {
 		this.setState({
-			devices: []
+			devices: [],
+			text: "Päivitetään ..."
 		})
+		setTimeout(() => {
+			this.setState({text: this.originalText})
+		}, 5000)
 	}
 	render() {
     	return (
       		<View style={styles.container}>
 				<Text onPress={() => this.updateDevices()} style={styles.updateBtn}>Päivitä</Text>
-				<Text style={styles.text}>Vapaat laitteet</Text>
+				<Text style={styles.text}>{this.state.text}</Text>
 				
 				{
 					this.state.devices.length == 0 &&
@@ -84,8 +108,8 @@ const styles = StyleSheet.create({
 		textAlign: "center"
 	},
 	container: {
-		flex: 1,
 		alignItems: "center",
+		flex: 1,
 		paddingTop: 39
 	},
 	device: {
