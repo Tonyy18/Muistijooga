@@ -19,6 +19,7 @@ class DeviceList extends Component {
 	}
 	async scanDevices() {
 		this.setState({devices: [], text: this.originalText});
+		//Look for devices which name includes this.nameInc
 		this.manager.startDeviceScan(null, null, (error, device) => {
 			if(device != null && device.name != null) {
 				if(this.state.devices.indexOf(device.name) == -1 && device.name.includes(this.nameInc)) {
