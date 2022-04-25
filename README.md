@@ -14,11 +14,5 @@
   <li>Service uuid = 180c -> 0000180c-0000-1000-8000-00805f9b34fb</li>
   <li>Characteristic uuid = 2A56</li>
   <li>Maximum of 20 sensors</li>
+  <li>Transmitted data ":1:2:3:". String with activated steps separated by semicolons</li>
 </ul>
-
-<h4>Changes</h4>
-<ul>
-  <li>Steps in both directions</li>
-  <li>Changes step images for up and down directions</li>
-</ul>
-
