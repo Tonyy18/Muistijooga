@@ -16,3 +16,9 @@
   <li>Maximum of 20 sensors</li>
 </ul>
 
+<h4>Changes</h4>
+<ul>
+  <li>Steps in both directions</li>
+  <li>Changes step images for up and down directions</li>
+</ul>
+
