@@ -104,7 +104,9 @@ export default class Carpet extends Component {
             nextStep: 0, //Index
             correctSteps: [],
             finished: false,
-            showPattern: false
+            showPattern: false,
+            direction: false,
+            stepCount: 0
         }
         this.pickerItems = [];
         for(let a = 0; a < Patterns.objects.length; a++) {
@@ -116,7 +118,9 @@ export default class Carpet extends Component {
         this.setState({
             correctSteps: [],
             finished: false,
-            nextStep: 0
+            nextStep: 0,
+            direction: false,
+            stepCount: 0
         })
     }
     render() {
@@ -126,21 +130,34 @@ export default class Carpet extends Component {
         data = data.map(x => parseInt(x))
 
         if(this.state.finished == false) {
-            let _steps = this.state.pattern.getSteps(null);
+            let _steps = this.state.pattern.getSteps(this.state.direction);
+            let _allSteps = this.state.pattern.getSteps(null);
             //Maximum of 20 steps. Remove others
             let steps = _steps.filter((el) => {
                 return el <= 20;
             })
+            let allSteps = _allSteps.filter((el) => {
+                return el <= 20;
+            })
             let correctSteps = this.state.correctSteps;
+
+            if(correctSteps.length == steps.length && this.state.direction == false) {
+                this.setState({
+                    correctSteps: [],
+                    direction: true,
+                    nextStep: 0
+                })
+            }
             let nextStep = steps[this.state.nextStep];
             if(data.indexOf(nextStep) > -1) {
                 correctSteps.push(nextStep)
                 this.setState({
                     correctSteps: correctSteps,
-                    nextStep: this.state.nextStep + 1
+                    nextStep: this.state.nextStep + 1,
+                    stepCount: this.state.stepCount + 1
                 })
             }
-            if(this.state.correctSteps.length == steps.length && this.state.finished == false) {
+            if(this.state.stepCount == allSteps.length && this.state.finished == false) {
                 //All correct steps done
                 this.setState({
                     finished: true
@@ -187,13 +204,30 @@ export default class Carpet extends Component {
                     </View>
                 </View>
                 {rows}
-                
+                {this.state.direction == false &&  
+                    <Text style={style.direction}>
+                        Ylöspäin
+                    </Text> 
+                }
+                {this.state.direction == true &&  
+                    <Text style={style.direction}>
+                        Alaspäin
+                    </Text> 
+                }
             </View>
         )
     }
 }
 
 const style = StyleSheet.create({
+    direction: {
+        fontSize: 16,
+        textAlign: "center",
+        padding: 20,
+        borderTopColor: "#E2E2E2",
+        borderStyle: "solid",
+        borderTopWidth: 1
+    }, 
     modalText: {
         fontSize: 16
     },
