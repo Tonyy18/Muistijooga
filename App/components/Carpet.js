@@ -171,7 +171,6 @@ export default class Carpet extends Component {
                 })
             }
             let nextStep = steps[this.state.nextStep];
-            console.log(this.props.data)
             if(data.indexOf(nextStep) > -1) {
                 correctSteps.push(nextStep)
                 this.setState({

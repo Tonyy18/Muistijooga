@@ -175,8 +175,8 @@ class Pattern4 {
 
 class Patterns {
     constructor() {
-        this.objects = [Pattern1, Pattern2, Pattern3, Pattern4,Test];
+        this.objects = [Pattern1, Pattern2, Pattern3, Pattern4];
     }
 }
-export {Pattern1, Pattern2, Pattern3, Pattern4,Test}
+export {Pattern1, Pattern2, Pattern3, Pattern4}
 export default new Patterns();
