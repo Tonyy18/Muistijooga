@@ -5,6 +5,7 @@ import {Picker} from '@react-native-picker/picker';
 import Patterns from "./Patterns"
 const ROW_NUMBER = 6;
 const MAX_STEP = 20; //The maximum step number
+console.disableYellowBox = true;
 class Cell extends Component {
     constructor(props) {
         super(props);
