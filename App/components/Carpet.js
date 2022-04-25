@@ -4,7 +4,7 @@ import React, { Component, useEffect, useState } from 'react';
 import {Picker} from '@react-native-picker/picker';
 import Patterns from "./Patterns"
 const ROW_NUMBER = 6;
-
+const MAX_STEP = 20; //The maximum step number
 class Cell extends Component {
     constructor(props) {
         super(props);
@@ -16,6 +16,7 @@ class Cell extends Component {
         } else if(this.props.inrow != 1 ){
             _style.push(style.cellLeft);
         }
+        //Convert numbers to alphabets
         let letter = String.fromCharCode(this.props.number + 64);
         if(letter == "W") {
             letter = "X";
@@ -23,10 +24,18 @@ class Cell extends Component {
             letter = "Y";
         }
         let pattern = this.props.state.pattern //Pattern in use
-        let leftSteps = pattern.getLeftSteps();
-        let rightSteps = pattern.getRightSteps();
-        
+        let leftSteps = pattern.getLeftSteps(this.props.state.direction);
+        leftSteps = leftSteps.filter((el) => {
+            return el <= MAX_STEP;
+        })
+        let rightSteps = pattern.getRightSteps(this.props.state.direction);
+        rightSteps = rightSteps.filter((el) => {
+            return el <= MAX_STEP;
+        })
         //The game
+        //The whole idea is just to show correct image in a step
+        //If the step number is in the correctSteps array show green foot otherwise show red
+        //If in the leftSteps array show left step image etc...
         let wrong = false;
         let correct = false;
 
@@ -73,6 +82,7 @@ class Cell extends Component {
 }
 
 class Row extends Component {
+    //Generate rows
     constructor(props) {
         super(props);
     }
@@ -104,8 +114,18 @@ export default class Carpet extends Component {
             nextStep: 0, //Index
             correctSteps: [],
             finished: false,
-            showPattern: false
+            showPattern: false,
+            direction: false,
+            stepCount: 0
         }
+        //Pattern: Current step pattern in use
+        //NextStep: Index for the next step in current step array (upward or backward step array from step pattern getSteps method)
+        //correctSteps: correctSteps within the current step array (up or down step array). Resets when direction changes. (Basicly only shows the correct step images (green steps))
+        //Finished: Activated on last step. Shows modal
+        //showPattern: For checkbox. Shows step images when true
+        //direction: Up or down. Used when requesting steps from pattern. false = steps up, true = steps down
+        //stepCount: The actual amount of correct steps. Doesn't reset like the correctSteps array. Used to validate the end of steps
+        //(Stepcount == pattern.getSteps(null).length) == all steps ready
         this.pickerItems = [];
         for(let a = 0; a < Patterns.objects.length; a++) {
             const pattern = Patterns.objects[a].patternName;
@@ -116,33 +136,51 @@ export default class Carpet extends Component {
         this.setState({
             correctSteps: [],
             finished: false,
-            nextStep: 0
+            nextStep: 0,
+            direction: false,
+            stepCount: 0
         })
     }
     render() {
+        //Convert string data ':1:2:3:'
+        //to array [1,2,3]
         let data = this.props.data.split(":")
         data.pop();
         data.shift();
         data = data.map(x => parseInt(x))
 
         if(this.state.finished == false) {
-            let steps = this.state.pattern.getSteps(null);
+            let _steps = this.state.pattern.getSteps(this.state.direction); //Steps in current direction (up or down)
+            let _allSteps = this.state.pattern.getSteps(null); //All steps (up and down steps combined). 
             //Maximum of 20 steps. Remove others
-            if(steps.length > 20) {
-                while(steps.length > 20) {
-                    steps.pop();
-                }
-            }
+            //Last 4 steps are not used so those are removed here
+            let steps = _steps.filter((el) => {
+                return el <= MAX_STEP;
+            })
+            let allSteps = _allSteps.filter((el) => {
+                return el <= MAX_STEP;
+            })
             let correctSteps = this.state.correctSteps;
+
+            if(correctSteps.length == steps.length && this.state.direction == false) {
+                //Changes direction
+                this.setState({
+                    correctSteps: [],
+                    direction: true,
+                    nextStep: 0
+                })
+            }
             let nextStep = steps[this.state.nextStep];
+            console.log(this.props.data)
             if(data.indexOf(nextStep) > -1) {
                 correctSteps.push(nextStep)
                 this.setState({
                     correctSteps: correctSteps,
-                    nextStep: this.state.nextStep + 1
+                    nextStep: this.state.nextStep + 1,
+                    stepCount: this.state.stepCount + 1
                 })
             }
-            if(this.state.correctSteps.length == steps.length && this.state.finished == false) {
+            if(this.state.stepCount == allSteps.length && this.state.finished == false) {
                 //All correct steps done
                 this.setState({
                     finished: true
@@ -189,13 +227,30 @@ export default class Carpet extends Component {
                     </View>
                 </View>
                 {rows}
-                
+                {this.state.direction == false &&  
+                    <Text style={style.direction}>
+                        Ylöspäin
+                    </Text> 
+                }
+                {this.state.direction == true &&  
+                    <Text style={style.direction}>
+                        Alaspäin
+                    </Text> 
+                }
             </View>
         )
     }
 }
 
 const style = StyleSheet.create({
+    direction: {
+        fontSize: 16,
+        textAlign: "center",
+        padding: 20,
+        borderTopColor: "#E2E2E2",
+        borderStyle: "solid",
+        borderTopWidth: 1
+    }, 
     modalText: {
         fontSize: 16
     },

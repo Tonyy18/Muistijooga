@@ -11,7 +11,7 @@ class DataList extends Component {
         super(props);
         this.deviceName = this.props.route.deviceName;
         this.found = false;
-        this.serviceUUID = "0000180c-0000-1000-8000-00805f9b34fb";
+        this.serviceUUID = "0000180c-0000-1000-8000-00805f9b34fb";//Specified in arduino code
         this.service = null;
         this.charactUUID = "2A56";
         this.charact = null //characteristic object to read
@@ -30,11 +30,13 @@ class DataList extends Component {
             stateText: "Yhdistetään..."
         })
 		this.manager.startDeviceScan(null, null, (error, device) => {
+            //Find device with matching name 
 			if(device != null && device.name != null) {
 				if(device.name == this.deviceName && this.found == false) {
                     this.manager.stopDeviceScan();
                     this.found = true;
                     console.log("device found: " + this.deviceName);
+                    //Connect to the device found
                     device.connect().then((device) => {
                         this.setState({
                             stateText: "Haetaan palveluita..."
@@ -46,12 +48,14 @@ class DataList extends Component {
                         device.services().then((services) => {
                             for(let a = 0; a < services.length; a++) {
                                 const service = services[a];
+                                //Look for the specific service
                                 if(service.uuid == this.serviceUUID) {
                                     this.service = service;
                                     this.setState({
                                         stateText: "Haetaan ominaisuuksia..."
                                     })
                                     device.characteristicsForService(this.serviceUUID).then((chars) => {
+                                        //Find and read from characteristic
                                         if(chars.length > 0) {
                                             this.charactUUID = chars[0]["uuid"];
                                             service.readCharacteristic(this.charactUUID, null).then((charact) => {
@@ -59,6 +63,7 @@ class DataList extends Component {
                                                 this.setState({
                                                     stateText: "Odotetaan sensori dataa ..."
                                                 })
+                                                //Add a monitorin to the caracteristic to receive data automatically
                                                 this.subscriptions.push(charact.monitor((error, charact) => {
                                                     if(charact == null) return;
                                                     const value = base64.decode(charact.value);
@@ -89,6 +94,7 @@ class DataList extends Component {
         }
     }
     destroy () {
+        //Destory manage properly
         if(this.device != null) {
             this.removeSubscriptions();
             this.device.cancelConnection().then(() => {
@@ -102,6 +108,7 @@ class DataList extends Component {
         delete this.manager;
     }
     componentDidMount() {
+        //Start device scanning automatically
 		this.props.navigation.addListener("focus", () => {
 			this.manager = new BleManager();
 			this.findDevice();
