@@ -19,5 +19,5 @@
 
 <h4>Notes</h4>
 <ul>
-  <li><a href"https://medium.com/geekculture/react-native-generate-apk-debug-and-release-apk-4e9981a2ea51">Build release apk</a></li>
+  <li>https://medium.com/geekculture/react-native-generate-apk-debug-and-release-apk-4e9981a2ea51</li>
 </ul>
