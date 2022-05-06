@@ -171,8 +171,9 @@ export default class Carpet extends Component {
                     nextStep: 0
                 })
             }
-            let nextStep = steps[this.state.nextStep];
+            let nextStep = steps[this.state.nextStep]; //Number of next step in pattern
             if(data.indexOf(nextStep) > -1) {
+                //If the step is in the data array
                 correctSteps.push(nextStep)
                 this.setState({
                     correctSteps: correctSteps,
