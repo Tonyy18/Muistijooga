@@ -6,6 +6,7 @@
 </ul>
 
 ```
+cd App
 npm install
 react-native start
 react-native run-android
