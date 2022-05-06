@@ -3,14 +3,13 @@
 <ul>
   <li>React native (no expo)</li>
   <li>Java version >= 8</li>
-
-    ```
-    npm install
-    react-native start
-    react-native run-android
-    ```
-    
 </ul>
+
+```
+npm install
+react-native start
+react-native run-android
+```
 
 <h3>Arduino</h3>
 <ul>
