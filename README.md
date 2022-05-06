@@ -2,14 +2,12 @@
 <h3>Mobile app</h3>
 <ul>
   <li>React native (no expo)</li>
-  <li>Java version 8</li>
+  <li>Java version >= 8</li>
 
     ```
-    
     npm install
     react-native start
     react-native run-android
-    
     ```
     
 </ul>
