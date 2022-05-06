@@ -6,7 +6,11 @@
   <li>
     
     ```
+    
     npm install
+    react-native start
+    react-native run-android
+    
     ```
     
   </li>
