@@ -3,9 +3,13 @@
 <ul>
   <li>React native (no expo)</li>
   <li>Java version 8</li>
-  ```
-  npm install
-  ```
+  <li>
+    
+    ```
+    npm install
+    ```
+    
+  </li>
 </ul>
 
 <h3>Arduino</h3>
